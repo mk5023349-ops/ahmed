@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shark AI</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: "Tahoma", sans-serif;
+      background: linear-gradient(135deg, #ffecd2, #fcb69f, #a1c4fd, #c2e9fb);
+      background-size: 400% 400%;
+      animation: gradientBG 15s ease infinite;
+      color: #000;
+    }
+
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    header {
+      padding: 1rem;
+      background: rgba(2, 136, 209, 0.9);
+      text-align: center;
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: #fff;
+      border-bottom: 3px solid #fff;
+    }
+    .container {
+      padding: 2rem;
+      max-width: 800px;
+      margin: auto;
+      background: rgba(255, 255, 255, 0.85);
+      border-radius: 15px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    }
+    input[type="text"] {
+      width: 100%;
+      padding: 0.8rem;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+      margin-bottom: 1rem;
+    }
+    button {
+      padding: 0.7rem 1.5rem;
+      border: none;
+      border-radius: 8px;
+      background: linear-gradient(45deg, #0288d1, #26c6da);
+      color: #fff;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-top: 0.5rem;
+      transition: transform 0.2s ease;
+    }
+    button:hover {
+      transform: scale(1.05);
+    }
+    .output {
+      margin-top: 2rem;
+      padding: 1rem;
+      background: #ffffff;
+      border-radius: 10px;
+      min-height: 100px;
+      color: #000;
+      box-shadow: 0 0 12px rgba(0,0,0,0.2);
+    }
+    .source {
+      font-size: 0.9rem;
+      color: #444;
+      margin-top: 0.5rem;
+    }
+    #imagePreview img {
+      max-width: 100%;
+      margin-top: 10px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    }
+  </style>
+</head>
+<body>
+  <header>🤖 Shark AI</header>
+  <div class="container">
+    <input id="question" type="text" placeholder="اسألني أي شيء...">
+    <button onclick="answer()">ابحث</button>
+    
+    <h3>📤 أضف صورة:</h3>
+    <input type="file" id="imageUpload" accept="image/*" onchange="previewImage(event)">
+    <div id="imagePreview"></div>
+
+    <div class="output" id="output"></div>
+  </div>
+
+  <script>
+    const environmentData = {
+      "البيئة": "البيئة هي كل ما يحيط بالكائنات الحية من ماء وهواء وتربة وكائنات أخرى، وهي ضرورية للحياة.",
+      "التلوث": "التلوث هو إدخال مواد أو عناصر ضارة في البيئة تؤدي إلى أضرار للكائنات الحية والتوازن الطبيعي.",
+      "إعادة التدوير": "إعادة التدوير هي عملية تحويل المخلفات إلى مواد يمكن إعادة استخدامها لتقليل التلوث والحفاظ على الموارد.",
+      "تغير المناخ": "تغير المناخ هو التحول طويل المدى في درجات الحرارة وأنماط الطقس، ويرتبط غالبًا بالأنشطة البشرية مثل حرق الوقود الأحفوري.",
+      "نصائح": "🌱 قلل استهلاك البلاستيك - 💧 وفر في استخدام المياه - ⚡ استخدم الطاقة المتجددة عند الإمكان - 🚴‍♂️ استخدم وسائل نقل صديقة للبيئة."
+    };
+
+    const healthData = {
+      "التخسيس": "للتخسيس ينصح بتناول وجبات صحية متوازنة، تقليل السكريات والدهون، ممارسة الرياضة بانتظام، والحفاظ على شرب الماء بكميات كافية.",
+      "التغذية": "التغذية السليمة تعني تناول كميات مناسبة من البروتينات، الكربوهيدرات، الدهون الصحية، الفيتامينات والمعادن للحفاظ على صحة جيدة.",
+      "الطبخ": "الطبخ الصحي يعتمد على استخدام الخضروات الطازجة، الزيوت النباتية، تقليل الملح، والابتعاد عن الأطعمة المصنعة بقدر الإمكان."
+    };
+
+    async function answer() {
+      const q = document.getElementById("question").value.trim();
+      const out = document.getElementById("output");
+
+      // الرد الخاص بالصانع
+      const triggers = ["من الذى صنعك", "مين صنعك", "من صممك", "من الذي صنعك", "من صانعك", "who created you", "who made you"];
+      if (triggers.some(t => q.toLowerCase().includes(t))) {
+        out.innerHTML = "✅ صنعني <b>أحمد عمرو خليل</b> في <b>مدرسة الجيل المسلم الخاصة بالسنطة</b>.";
+        return;
+      }
+
+      if (Object.keys(environmentData).some(key => q.includes(key))) {
+        for (const k in environmentData) {
+          if (q.includes(k)) {
+            out.innerHTML = `<h3>🌍 ${k}</h3><p>${environmentData[k]}</p>`;
+            return;
+          }
+        }
+      }
+
+      if (Object.keys(healthData).some(key => q.includes(key))) {
+        for (const k in healthData) {
+          if (q.includes(k)) {
+            out.innerHTML = `<h3>🍎 ${k}</h3><p>${healthData[k]}</p>`;
+            return;
+          }
+        }
+      }
+
+      if (q.length === 0) {
+        out.innerHTML = "⚠️ من فضلك اكتب سؤالاً أولاً.";
+        return;
+      }
+
+      // جلب المعلومات من ويكيبيديا
+      out.innerHTML = "🔍 جاري البحث عن: <b>" + q + "</b> ...";
+
+      try {
+        const apiUrl = `https://ar.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(q)}`;
+        const res = await fetch(apiUrl);
+
+        if (!res.ok) {
+          throw new Error("لم أستطع الوصول للمعلومة.");
+        }
+
+        const data = await res.json();
+
+        if (data.extract) {
+          out.innerHTML = `<h3>${data.title}</h3><p>${data.extract}</p>`;
+          if (data.thumbnail && data.thumbnail.source) {
+            out.innerHTML += `<img src="${data.thumbnail.source}" alt="${data.title}">`;
+          }
+          out.innerHTML += `<div class='source'>المصدر: <a href='${data.content_urls.desktop.page}' target='_blank' style='color:#0288d1;'>ويكيبيديا</a></div>`;
+        } else {
+          out.innerHTML = "❌ لم أجد نتائج دقيقة لهذا السؤال.";
+        }
+      } catch (err) {
+        out.innerHTML = "⚠️ حدث خطأ أثناء جلب المعلومات.";
+      }
+    }
+
+    function previewImage(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          document.getElementById("imagePreview").innerHTML = 
+            `<img src="${e.target.result}" alt="صورة المستخدم">`;
+        }
+        reader.readAsDataURL(file);
+      }
+    }
+  </script>
+</body>
+</html>
+ض
